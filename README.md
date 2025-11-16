@@ -1,106 +1,151 @@
-# Machine Learning Prediction of CO₂ Storage Efficiency
+# CO₂ Storage Surrogate Modeling using SPE11C-A full 3D field-scale model.
+
 ### **Abstract**
-This project applies machine learning and data-driven modeling to predict the efficiency of CO₂ geological storage. Using the SPE10 synthetic reservoir dataset and later integrating the Sleipner CO₂ injection field data, this work develops a surrogate model that predicts CO₂ plume evolution, storage efficiency, and risk zones. The goal is to bridge high-fidelity reservoir simulations with machine learning to reduce computational cost and accelerate decision-making in carbon capture and storage (CCS) — supporting the broader mission of energy transition and decarbonization.
+Geological carbon storage is a key component of large-scale decarbonization strategies, yet high-fidelity reservoir simulations remain computationally expensive for predicting long-term CO₂ behavior in heterogeneous subsurface formations. This study develops a data-driven surrogate model for CO₂ injection and storage efficiency using the SPE Comparative Solution Project (CSP) 11C — a full 3D field-scale benchmark designed for multiphase CO₂ flow prediction. Leveraging high-resolution spatial fields and time-evolving mass-balance data, the workflow integrates physics-informed feature engineering with machine-learning architectures to approximate pressure evolution, plume migration, and storage performance at substantially reduced computational cost. Baseline regression models and neural networks are evaluated alongside advanced surrogate approaches, including 3D convolutional models and operator-learning frameworks. The results demonstrate the potential of data-driven surrogates to replicate key dynamical behaviors of CO₂ injection scenarios while providing rapid evaluation capabilities for site screening and sensitivity analysis. This work contributes a reproducible, scalable modeling framework that bridges numerical simulation and machine learning, supporting ongoing research efforts in carbon management, subsurface decarbonization, and energy-transition technologies.
 
 ---
 
 ## 1. Research Objectives
-- Develop a **data-driven surrogate model** for CO₂ storage simulation.  
-- Predict **CO₂ plume behavior**, storage efficiency, and heterogeneity-driven risk.  
-- Integrate **reservoir simulation data** with ML workflows to enable faster screening of geological storage sites.  
-- Support **decarbonization and carbon management** through scalable, reproducible modeling.  
+- Construct a clean, analysis-ready 4D dataset (x, y, z, t) from the SPE 11C spatial maps and time-series outputs.  
+- Develop a surrogate model capable of predicting pressure evolution, CO₂ plume migration, mass distribution, and long-term storage efficiency.  
+- Compare physics-based simulation behavior with machine-learning approximations.  
+- Investigate how geology and injection conditions influence long-term containment.  
+- Build a reproducible CCS-focused ML workflow suitable for academic research.
 
 ---
 
-## 2. Datasets
-### **SPE10 Synthetic Model**
-- **Files:** `spe_phi.dat` (porosity) and `spe_perm.dat` (permeabilty)
-- **Grid size:** 60 x 220 x 85
-- **Variables:**
-  - Porosity field (ϕ)
-  - Permeabilty tensor (Kx, Ky, Kz)
-- Source: [SPE Comparative Solution Project](https://www.spe.org/web/csp/datasets/set02.htm)
+## 2. Dataset Overview: SPE CSP 11C (2023–2025)
 
-### **Sleipner CO2 Storage**
-- Real field CO2 injection time series (pressure, plume extent, seismic depth maps)
-- Source: [Sleipner Benchmark Dataset - SINTEF / IEAGHG](https://co2datashare.org)
+### **2.1 Spatial Maps**
+Each timestep snapshot includes:
+- x, y, z coordinates  
+- Pressure (Pa)  
+- CO₂ saturation  
+- CO₂ mass components (mobile, immobile, dissolved)  
+- Water mass and densities  
+- Gas/liquid densities  
+- Temperature  
+
+These represent the full 3D spatial distribution of CO₂-related properties.
+
+### **2.2 Time Series**
+Includes:
+- Injection pressures (p1, p2)  
+- Mass balance components (mobile, immobile, dissolved, sealed)  
+- Boundary flux  
+- Containment metrics  
+- Time evolution of total CO₂ mass  
+
+### **Why Version 11C?**
+It provides a realistic 3D field-scale environment with geological layering, heterogeneity, and multiphase CO₂ behavior—ideal conditions for surrogate model development.
 
 ---
 
 ## 3. Methodology
 
-This workflow combines **reservoir data preprocessing**, **synthetic injection scenario generation**, and **ML-based prediction modeling**.
-
 ### **3.1 Data Preparation**
-- Load and clean porosity/permeability fields  
-- Normalize and reshape 3D grid structure  
-- Visualize reservoir heterogeneity distribution  
+- Convert large CSV files into efficient formats (Parquet/HDF5).  
+- Remove inactive cells.  
+- Normalize and align spatial maps with time-series data.  
+- Reconstruct the 3D grid for each timestep.
 
-### **3.2 Simulation Proxy**
-- Generate synthetic CO₂ saturation fronts  
-- Label data for ML training (storage efficiency, saturation ratio)  
+### **3.2 Feature Engineering**
+Physics-inspired features:
+- Depth and structural zones  
+- Distance to injection well  
+- Saturation gradients  
+- Pressure derivatives  
+- CO₂ mass categories (mobile/immobile/dissolved)  
+- Storage efficiency ratio  
 
-### **3.3 Machine Learning Model**
-- Algorithms tested: `RandomForestRegressor`, `XGBoost`, `3D CNN`  
-- Predict target variables: CO₂ efficiency, plume radius, or saturation  
-- Evaluate using **R²**, **RMSE**, and uncertainty intervals  
+### **3.3 Machine Learning Models**
+Baseline models:
+- RandomForestRegressor  
+- XGBoostRegressor  
+- Fully Connected Neural Network
 
-### **3.4 Sensitivity & Risk Assessment**
-- Perform feature importance and parameter sensitivity  
-- Identify zones of high leakage risk or low storage performance  
+Advanced surrogate models:
+- 3D Convolutional Neural Network (3D-CNN)  
+- 3D U-Net for spatial prediction  
+- Fourier Neural Operator (FNO)  
+- Physics-Informed Neural Networks (PINNs)  
+
+Targets:
+- Pressure distribution  
+- CO₂ saturation  
+- Storage efficiency  
+- Mass evolution over time  
+
+### **3.4 Evaluation Metrics**
+- R²  
+- RMSE  
+- Spatial prediction error  
+- Temporal accuracy  
+- Plume evolution consistency  
+- Comparison with SPE 11C physical simulation
 
 ---
 
 ## 4. Tools & Libaries
-- **Languages**: Python  
-- **Libraries**: NumPy, Pandas, Matplotlib, Scikit-learn, XGBoost, TensorFlow / PyTorch  
-- **Visualization**: PyVista, Plotly  
-- **Supporting Tools**: SciPy, pytorch-lightning  
+- Python  
+- NumPy, Pandas, SciPy  
+- Scikit-learn, XGBoost  
+- TensorFlow / PyTorch  
+- PyVista, Plotly  
+- dask, pyarrow  
 
 ---
 
 ## 5. Expected Results
-- 3D visualization of predicted CO₂ plume evolution  
-- Model validation against simulated results  
-- Sensitivity plots showing the influence of porosity/permeability on storage performance  
-- Comparison between ML-predicted and simulation-based storage efficiency
+- Machine-learning-predicted 3D CO₂ plume evolution  
+- Surrogate pressure buildup curves  
+- Storage efficiency prediction vs. SPE 11C reference  
+- Sensitivity analysis for geological risk zones  
+- Visual comparison of ML and simulation-based outputs  
   
 ---
 
 ## 🔬 6. Future Work
-- Integrate **real Sleipner CO₂ injection data** for transfer learning  
-- Extend the model to **multi-well injection optimization**  
-- Publish results as an open-source **CO₂ storage ML benchmark**
+- Integrate MRST-based simulations for expanded parameter space.  
+- Extend surrogate model to multi-scenario injection optimization.  
+- Apply transfer learning using real CCS datasets (e.g., Sleipner).  
+- Develop a publication-ready open-source CCS surrogate benchmark.  
    
 ---
 
 ## Repository Structure
 ```
-CO2_Storage_Efficiency_ML/
+ccs_11c_surrogate_model/
 │
 ├── data/
-│ ├── spe_phi.dat
-│ ├── spe_perm.dat
-│ └── sleipner_data/ (optional, planned integration)
+│ ├── raw/
+│ ├── interim/
+│ └── processed/
 │
 ├── notebooks/
-│ ├── 1_Data_Preparation.ipynb
-│ ├── 2_Feature_Engineering.ipynb
-│ ├── 3_ML_Modeling.ipynb
-│ ├── 4_Model_Interpretation.ipynb
-│ ├── 5_Visualization_and_Risk.ipynb
-│ └── 6_Report_Summary.ipynb
+│ ├── 1_Data_Exploration.ipynb
+│ ├── 2_Preprocessing.ipynb
+│ ├── 3_Feature_Engineering.ipynb
+│ ├── 4_ML_Baseline_Models.ipynb
+│ ├── 5_Surrogate_3D_Model.ipynb
+│ └── 6_Visualization_Results.ipynb
+│
+├── src/
+│ ├── data/
+│ ├── features/
+│ ├── models/
+│ └── visualization/
 │
 ├── models/
-│ ├── trained_model.pkl
-│ └── metrics.json
+│ ├── baseline.pkl
+│ └── surrogate_unet.pth
 │
-├── results/
-│ ├── plots/
-│ └── 3D_visualizations/
+├── reports/
+│ ├── figures/
+│ └── manuscript/
 │
-├── README.md
-└── requirements.txt
+├── environment.yml
+└── README.md
 ```
 ---
 
