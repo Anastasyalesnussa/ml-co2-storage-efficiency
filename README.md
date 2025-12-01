@@ -104,6 +104,7 @@ Targets:
 | MLPRegressor_baseline     | 120,858    | 0.99863     |
 
 The final surrogate neural network generalizes well across the SPE11C dataset with fast inference (< 0.1 sec per prediction)
+
 ---
 
 ## 6. Scientific Impact
