@@ -14,11 +14,9 @@ Or it can be found here: https://drive.google.com/drive/folders/1e-rzJmojzgfIY0W
 - Temperature  
 - Time-series injection and plume evolution  
 
-After downloading, extract all files into:
+Place the downloaded files in: data/raw/
+´´´
 
-´´´
-data/raw/spe11c/
-´´´
 
 
 
