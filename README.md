@@ -181,6 +181,10 @@ spe11c_surrogate_model/
 
 
 ```
+
+To install dependencies
+pip install -r requirements.txt
+
 ---
 
 ## Author
